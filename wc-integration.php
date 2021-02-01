@@ -37,11 +37,10 @@ if (!class_exists('WC_Tabs')) :
          */
         public function __construct()
         {
-
             add_action('plugins_loaded', array($this, 'init'));
-
             add_filter('woocommerce_product_tabs', array($this, 'wc_tabs_rename'), 98);
             add_filter('loop_shop_columns', array($this, 'loop_columns'), 20, 1);
+            add_filter('loop_shop_per_page', array($this, 'products_count_per_page'), 30, 1);
 
         }
 
@@ -88,7 +87,6 @@ if (!class_exists('WC_Tabs')) :
             <div class="notice notice-error is-dismissible">
                 <p><?php echo $woo_err->get_error_message('woo_err'); ?>
                     <strong><?php echo $woo_activ_error->get_error_message('woo_activ_err'); ?></strong>.</p>
-
             </div>
             <?php
         }
@@ -123,7 +121,17 @@ if (!class_exists('WC_Tabs')) :
         {
             $optIntegrate = new WC_Tabs_Integration;
             $prod_per_row = $optIntegrate->get_option('col_count');
+
             return $prod_per_row;
+        }
+
+
+        function products_count_per_page($prod_per_page)
+        {
+            $optIntegrate = new WC_Tabs_Integration;
+            $prod_per_page = $optIntegrate->get_option('prod_count');
+
+            return $prod_per_page;
         }
 
 

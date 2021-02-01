@@ -27,6 +27,10 @@ if (!class_exists('WC_Tabs_Integration')) :
          * @var string
          */
         private $col_count;
+        /**
+         * @var string
+         */
+        private $prod_count;
 
 
         /**
@@ -49,6 +53,7 @@ if (!class_exists('WC_Tabs_Integration')) :
             $this->rev_tab = $this->get_option('rev_tab');
             $this->info_tab = $this->get_option('info_tab');
             $this->col_count = $this->get_option('col_count');
+            $this->prod_count = $this->get_option('prod_count');
 
             // Actions.
             add_action('woocommerce_update_options_integration_' . $this->id, array($this, 'process_admin_options'));
@@ -94,6 +99,14 @@ if (!class_exists('WC_Tabs_Integration')) :
                     'default' => '3'
                 ),
 
+                'prod_count' => array(
+                    'title' => __('Products count per page', 'wc-tabs'),
+                    'type' => 'text',
+                    'description' => __('Type number of products per page', 'wc-tabs'),
+                    'desc_tip' => true,
+                    'default' => '2'
+                ),
+
 
                 'customize_button' => array(
                     'title' => __('Go to shop page', 'wc-tabs'),
@@ -114,7 +127,7 @@ if (!class_exists('WC_Tabs_Integration')) :
         /**
          * Generate Button HTML.
          *
-        /*
+         * /*
          * <input type="number" name="age" id="age" min="1" max="10" step="2">
          *
          */
@@ -154,6 +167,7 @@ if (!class_exists('WC_Tabs_Integration')) :
             <?php
             return ob_get_clean();
         }
+
         /**
          * Santize our settings
          * @see process_admin_options()
@@ -164,13 +178,16 @@ if (!class_exists('WC_Tabs_Integration')) :
             if (isset($settings) &&
                 isset($settings['desc_tab']) &&
                 isset($settings['rev_tab']) &&
-                isset($settings['info_tab'])&&
-                isset($settings['col_count'])
+                isset($settings['info_tab']) &&
+                isset($settings['col_count'])&&
+                isset($settings['prod_count'])
+
             ) {
                 $settings['desc_tab'] = strtolower($settings['desc_tab']);
                 $settings['rev_tab'] = strtolower($settings['rev_tab']);
                 $settings['info_tab'] = strtolower($settings['info_tab']);
                 $settings['col_count'] = (int)($settings['col_count']);
+                $settings['prod_count'] = (int)($settings['prod_count']);
             }
             return $settings;
         }
