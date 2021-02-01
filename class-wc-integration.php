@@ -7,6 +7,8 @@
  * @author   Pablozzz
  */
 
+//TODO: ADD VALIDATE AND ERROS MESSAGE!!!!
+
 if (!class_exists('WC_Tabs_Integration')) :
 
     class WC_Tabs_Integration extends WC_Integration
@@ -55,10 +57,12 @@ if (!class_exists('WC_Tabs_Integration')) :
             $this->col_count = $this->get_option('col_count');
             $this->prod_count = $this->get_option('prod_count');
 
+
             // Actions.
             add_action('woocommerce_update_options_integration_' . $this->id, array($this, 'process_admin_options'));
             // Filters.
             add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'sanitize_settings'));
+
         }
 
 
@@ -75,21 +79,21 @@ if (!class_exists('WC_Tabs_Integration')) :
                     'type' => 'text',
                     'description' => __('Type your custom name for description of product', 'wc-tabs'),
                     'desc_tip' => true,
-                    'default' => ''
+                    'default' => 'title'
                 ),
                 'rev_tab' => array(
                     'title' => __('Review ', 'wc-tabs'),
                     'type' => 'text',
                     'description' => __('Type your custom name for review of product', 'wc-tabs'),
                     'desc_tip' => true,
-                    'default' => ''
+                    'default' => 'title'
                 ),
                 'info_tab' => array(
                     'title' => __('Additional Info', 'wc-tabs'),
                     'type' => 'text',
                     'description' => __('Type your custom name for additional info of product', 'wc-tabs'),
                     'desc_tip' => true,
-                    'default' => ''
+                    'default' => 'title'//doesnt work
                 ),
                 'col_count' => array(
                     'title' => __('Columns count', 'wc-tabs'),
@@ -101,7 +105,7 @@ if (!class_exists('WC_Tabs_Integration')) :
 
                 'prod_count' => array(
                     'title' => __('Products count per page', 'wc-tabs'),
-                    'type' => 'text',
+                    'type' => 'number',
                     'description' => __('Type number of products per page', 'wc-tabs'),
                     'desc_tip' => true,
                     'default' => '2'
@@ -169,6 +173,17 @@ if (!class_exists('WC_Tabs_Integration')) :
         }
 
         /**
+         * Get publish products number to use in sanitize.
+         */
+
+        public function _get_publish_prod()
+        {//source:https://gist.github.com/kloon/4218605
+            $count_posts = wp_count_posts('product');
+            return $count_posts->publish;
+        }
+
+
+        /**
          * Santize our settings
          * @see process_admin_options()
          */
@@ -179,7 +194,7 @@ if (!class_exists('WC_Tabs_Integration')) :
                 isset($settings['desc_tab']) &&
                 isset($settings['rev_tab']) &&
                 isset($settings['info_tab']) &&
-                isset($settings['col_count'])&&
+                isset($settings['col_count']) &&
                 isset($settings['prod_count'])
 
             ) {
@@ -187,41 +202,10 @@ if (!class_exists('WC_Tabs_Integration')) :
                 $settings['rev_tab'] = strtolower($settings['rev_tab']);
                 $settings['info_tab'] = strtolower($settings['info_tab']);
                 $settings['col_count'] = (int)($settings['col_count']);
-                $settings['prod_count'] = (int)($settings['prod_count']);
+                $settings['prod_count'] = $settings['prod_count'] <= $this->_get_publish_prod() ? (int)$settings['prod_count'] : 1;
+
             }
             return $settings;
-        }
-
-
-        /**
-         * Validate the API key
-         * @see validate_settings_fields()
-         */
-        public function validate_tab_name_field($key)
-        {
-            // get the posted value
-            $value = $_POST[$this->plugin_id . $this->id . '_' . $key];
-
-            if (isset($value) &&
-                20 < strlen($value)) {
-                $this->errors[] = $key;
-            }
-            return $value;
-        }
-
-        /**
-         * Display errors by overriding the display_errors() method
-         * @see display_errors()
-         */
-        public function display_errors()
-        {// loop through each error and display it
-            foreach ($this->errors as $key => $value) {
-                ?>
-                <div class="error">
-                    <p><?php _e('Looks like you made a mistake with the ' . $value . ' field. Make sure it isn&apos;t longer than 20 characters', 'wc-tabs'); ?></p>
-                </div>
-                <?php
-            }
         }
     }
 endif;

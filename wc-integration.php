@@ -61,6 +61,7 @@ if (!class_exists('WC_Tabs')) :
                 // Register the integration.
                 add_filter('woocommerce_integrations', array($this, 'wc_tab_integration'));
 
+
             } else {
                 // throw an admin error if you like
                 add_action('admin_notices', array($this, 'wc_tab_admin_notice'));
