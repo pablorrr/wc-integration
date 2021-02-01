@@ -23,6 +23,11 @@ if (!class_exists('WC_Tabs_Integration')) :
          * @var string
          */
         private $info_tab;
+        /**
+         * @var string
+         */
+        private $col_count;
+
 
         /**
          * Init and hook in the integration.
@@ -33,7 +38,7 @@ if (!class_exists('WC_Tabs_Integration')) :
 
             $this->id = 'wc-tabs-integration';
             $this->method_title = __('WC Tabs Settings', 'wc-tabs');
-            $this->method_description = __('Customize tabs names on single product page', 'wc-tabs');
+            $this->method_description = __('Customize your Woocommerce', 'wc-tabs');
 
             // Load the settings.
             $this->init_form_fields();
@@ -43,6 +48,8 @@ if (!class_exists('WC_Tabs_Integration')) :
             $this->desc_tab = $this->get_option('desc_tab');
             $this->rev_tab = $this->get_option('rev_tab');
             $this->info_tab = $this->get_option('info_tab');
+            $this->col_count = $this->get_option('col_count');
+
             // Actions.
             add_action('woocommerce_update_options_integration_' . $this->id, array($this, 'process_admin_options'));
             // Filters.
@@ -66,7 +73,7 @@ if (!class_exists('WC_Tabs_Integration')) :
                     'default' => ''
                 ),
                 'rev_tab' => array(
-                    'title' => __(' Review ', 'wc-tabs'),
+                    'title' => __('Review ', 'wc-tabs'),
                     'type' => 'text',
                     'description' => __('Type your custom name for review of product', 'wc-tabs'),
                     'desc_tip' => true,
@@ -79,6 +86,15 @@ if (!class_exists('WC_Tabs_Integration')) :
                     'desc_tip' => true,
                     'default' => ''
                 ),
+                'col_count' => array(
+                    'title' => __('Columns count', 'wc-tabs'),
+                    'type' => 'text',
+                    'description' => __('Type number of columns per page', 'wc-tabs'),
+                    'desc_tip' => true,
+                    'default' => '3'
+                ),
+
+
                 'customize_button' => array(
                     'title' => __('Go to shop page', 'wc-tabs'),
                     'type' => 'button',
@@ -97,6 +113,10 @@ if (!class_exists('WC_Tabs_Integration')) :
 
         /**
          * Generate Button HTML.
+         *
+        /*
+         * <input type="number" name="age" id="age" min="1" max="10" step="2">
+         *
          */
         public function generate_button_html($key, $data)
         {
@@ -130,16 +150,10 @@ if (!class_exists('WC_Tabs_Integration')) :
                         <?php echo $this->get_description_html($data); ?>
                     </fieldset>
                 </td>
-                <?php
-                echo $this->get_option('desc_tab');
-                echo $this->get_option('rev_tab');
-                echo $this->get_option('info_tab');?>
             </tr>
             <?php
             return ob_get_clean();
         }
-
-
         /**
          * Santize our settings
          * @see process_admin_options()
@@ -150,10 +164,13 @@ if (!class_exists('WC_Tabs_Integration')) :
             if (isset($settings) &&
                 isset($settings['desc_tab']) &&
                 isset($settings['rev_tab']) &&
-                isset($settings['info_tab'])) {
+                isset($settings['info_tab'])&&
+                isset($settings['col_count'])
+            ) {
                 $settings['desc_tab'] = strtolower($settings['desc_tab']);
                 $settings['rev_tab'] = strtolower($settings['rev_tab']);
                 $settings['info_tab'] = strtolower($settings['info_tab']);
+                $settings['col_count'] = (int)($settings['col_count']);
             }
             return $settings;
         }
@@ -175,15 +192,12 @@ if (!class_exists('WC_Tabs_Integration')) :
             return $value;
         }
 
-
         /**
          * Display errors by overriding the display_errors() method
          * @see display_errors()
          */
         public function display_errors()
-        {
-
-            // loop through each error and display it
+        {// loop through each error and display it
             foreach ($this->errors as $key => $value) {
                 ?>
                 <div class="error">
@@ -192,8 +206,5 @@ if (!class_exists('WC_Tabs_Integration')) :
                 <?php
             }
         }
-
-
     }
-
 endif;

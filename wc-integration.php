@@ -31,13 +31,18 @@ if (!class_exists('WC_Tabs')) :
     class WC_Tabs
     {
 
+
         /**
          * Construct the plugin.
          */
         public function __construct()
         {
+
             add_action('plugins_loaded', array($this, 'init'));
+
             add_filter('woocommerce_product_tabs', array($this, 'wc_tabs_rename'), 98);
+            add_filter('loop_shop_columns', array($this, 'loop_columns'), 20, 1);
+
         }
 
         /**
@@ -56,11 +61,13 @@ if (!class_exists('WC_Tabs')) :
 
                 // Register the integration.
                 add_filter('woocommerce_integrations', array($this, 'wc_tab_integration'));
+
             } else {
                 // throw an admin error if you like
                 add_action('admin_notices', array($this, 'wc_tab_admin_notice'));
                 return;
             }
+
 
             add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'wc_tab_action_links'));
         }
@@ -110,6 +117,13 @@ if (!class_exists('WC_Tabs')) :
 
             return $tabs;
 
+        }
+
+        public function loop_columns($prod_per_row)
+        {
+            $optIntegrate = new WC_Tabs_Integration;
+            $prod_per_row = $optIntegrate->get_option('col_count');
+            return $prod_per_row;
         }
 
 
