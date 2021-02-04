@@ -75,23 +75,23 @@ if (!class_exists('WC_Tabs_Integration')) :
         {
             $this->form_fields = array(
                 'desc_tab' => array(
-                    'title' => __('Description', 'wc-tabs'),
+                    'title' => __('Description in product tab', 'wc-tabs'),
                     'type' => 'text',
-                    'description' => __('Type your custom name for description of product', 'wc-tabs'),
+                    'description' => __('Type your custom name for description of product tab', 'wc-tabs'),
                     'desc_tip' => true,
                     'default' => 'title'
                 ),
                 'rev_tab' => array(
-                    'title' => __('Review ', 'wc-tabs'),
+                    'title' => __('Review in product tab', 'wc-tabs'),
                     'type' => 'text',
-                    'description' => __('Type your custom name for review of product', 'wc-tabs'),
+                    'description' => __('Type your custom name for review of product tab', 'wc-tabs'),
                     'desc_tip' => true,
                     'default' => 'title'
                 ),
                 'info_tab' => array(
-                    'title' => __('Additional Info', 'wc-tabs'),
+                    'title' => __('Additional Info in product tab', 'wc-tabs'),
                     'type' => 'text',
-                    'description' => __('Type your custom name for additional info of product', 'wc-tabs'),
+                    'description' => __('Type your custom name of product tab for additional info', 'wc-tabs'),
                     'desc_tip' => true,
                     'default' => 'title'//doesnt work
                 ),
@@ -106,6 +106,31 @@ if (!class_exists('WC_Tabs_Integration')) :
                 'prod_count' => array(
                     'title' => __('Products count per page', 'wc-tabs'),
                     'type' => 'number',
+                    'description' => __('Type number of products per page', 'wc-tabs'),
+                    'desc_tip' => true,
+                    'default' => '2'
+                ),
+
+                /*https://www.skyverge.com/blog/add-custom-options-to-woocommerce-settings/
+                 *  'type'    => 'select',
+    'options' => array(
+      'left'        => __( 'Left', 'woocommerce' ),
+      'right'       => __( 'Right', 'woocommerce' ),
+      'left_space'  => __( 'Left (with space)', 'woocommerce' ),
+      'right_space' => __( 'Right (with space)', 'woocommerce' )
+    ),
+                 */
+
+
+                'test' => array(
+                    'title' => __('select test', 'wc-tabs'),
+                    'type'    => 'select',
+                    'options' => array(
+                        'left'        => __( 'Left', 'woocommerce' ),
+                        'right'       => __( 'Right', 'woocommerce' ),
+                        'left_space'  => __( 'Left (with space)', 'woocommerce' ),
+                        'right_space' => __( 'Right (with space)', 'woocommerce' )
+                    ),
                     'description' => __('Type number of products per page', 'wc-tabs'),
                     'desc_tip' => true,
                     'default' => '2'
@@ -209,3 +234,8 @@ if (!class_exists('WC_Tabs_Integration')) :
         }
     }
 endif;
+
+
+
+
+?>

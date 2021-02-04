@@ -41,7 +41,7 @@ if (!class_exists('WC_Tabs')) :
             add_filter('woocommerce_product_tabs', array($this, 'wc_tabs_rename'), 98);
             add_filter('loop_shop_columns', array($this, 'loop_columns'), 20, 1);
             add_filter('loop_shop_per_page', array($this, 'products_count_per_page'), 30, 1);
-
+            add_action('woocommerce_before_shop_loop', array($this, '_product_subcategories'), 50);
         }
 
         /**
@@ -135,6 +135,61 @@ if (!class_exists('WC_Tabs')) :
             return $prod_per_page;
         }
 
+
+        /**
+         * Display category image on shoppage
+         * https://code.tutsplus.com/tutorials/display-woocommerce-categories-subcategories-and-products-in-separate-lists--cms-25479
+         */
+
+
+        function _product_subcategories($args = array())
+        {
+
+            $parentid = get_queried_object_id();//Retrieve ID of the current queried object.
+
+            /*
+              * TODO: UZYCIE BUFORA htmp  ob starty itd
+             *
+             */
+            $terms = get_terms('product_cat');
+
+            if ($terms) {
+//todo: przeniesc do wphead- stryle css
+
+                echo '<style>
+
+                              ul.product-cats > li.category:hover > a > img:hover {
+								-moz-transform: scale(1.2) rotate(360deg);
+								-webkit-transform: scale(1.2) rotate(360deg);
+								-o-transform: scale(1.2) rotate(360deg);
+								-ms-transform: scale(1.2) rotate(360deg);
+								transform: scale(1.2) rotate(340deg);
+								}
+                            li.category {
+                              display: inline-block;
+                              width: 100px;
+                              height: 100px;
+                              padding: 5px;
+                              
+                             }
+                        </style>';
+
+                echo '<ul class="product-cats">';
+                foreach ($terms as $term) {
+
+
+                    echo '<li class="category">
+                  <a href="' . esc_url(get_term_link($term)) . '" class="' . $term->slug . '">';
+                    echo '<span class="onsale">Promocja!</span>';
+                    woocommerce_subcategory_thumbnail($term);//todo zmienic na :get_woocommerce_term_meta oraz wp get attachment url to nie sa tylko subcat!!!
+                    echo $term->name;
+                    echo '</a>';
+                    echo '</li>';
+
+                }
+                echo '</ul>';
+            }
+        }
 
     }
 endif;
