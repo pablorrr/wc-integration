@@ -38,6 +38,10 @@ if (!class_exists('WC_Tabs_Integration')) :
          * @var string
          */
         private $cat_name;
+        /**
+         * @var string
+         */
+        private $promo_label;
 
 
         /**
@@ -62,6 +66,7 @@ if (!class_exists('WC_Tabs_Integration')) :
             $this->col_count = $this->get_option('col_count');
             $this->prod_count = $this->get_option('prod_count');
             $this->cat_name = $this->get_option('cat_name');
+            $this->promo_label = $this->get_option('promo_label');
 
 
             // Actions.
@@ -88,13 +93,13 @@ if (!class_exists('WC_Tabs_Integration')) :
 
             //convert keys array as key name same like value
             if (is_array($prod_cat) && !empty($prod_cat)) {
-                foreach ($prod_cat as $key => $val) {
-                    $new_prod_cat[$val] = $val;
-                }
-                return $new_prod_cat;
+
+                return array_combine($prod_cat,$prod_cat);
             } else
                 return ['EmptyCat'];
         }
+
+
 
 
         /**
@@ -148,7 +153,7 @@ if (!class_exists('WC_Tabs_Integration')) :
                     'title' => __('Select category name', 'wc-tabs'),
                     'type' => 'multiselect',
                     'options' => $this->get_categories(),
-                    'description' => __('Press ctrl and click on category which you want', 'wc-tabs'),
+                    'description' => __('Press ctrl and click on category which you want to show on Shop Page', 'wc-tabs'),
                     'desc_tip' => true,
 
                 ),

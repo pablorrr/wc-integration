@@ -41,8 +41,9 @@ if (!class_exists('WC_Tabs')) :
             add_filter('woocommerce_product_tabs', array($this, 'wc_tabs_rename'), 98);
             add_filter('loop_shop_columns', array($this, 'loop_columns'), 20, 1);
             add_filter('loop_shop_per_page', array($this, 'products_count_per_page'), 30, 1);
-           // add_action('woocommerce_before_shop_loop', array($this, '_product_subcategories'), 50);
-           add_action('woocommerce_before_shop_loop', array($this, 'test_two'), 50);
+            add_action('wp_head', array($this, 'add_cat_css'), 49);
+            add_action('woocommerce_before_shop_loop', array($this, '_product_subcategories'), 50);
+
         }
 
         /**
@@ -143,7 +144,7 @@ if (!class_exists('WC_Tabs')) :
          */
 
 
-        function _product_subcategories()
+        public function _product_subcategories()
         {
 
 
@@ -151,14 +152,45 @@ if (!class_exists('WC_Tabs')) :
              * TODO: UZYCIE BUFORA htmp  ob starty itd
              *
              */
-            $terms = get_terms('product_cat');
+            $optIntegrate = new WC_Tabs_Integration;
+            $cat_name = $optIntegrate->get_option('cat_name');
 
-            if ($terms) {
-//todo: przeniesc do wphead- stryle css
+            if (!empty($cat_name)):
 
+                $terms = get_terms('product_cat');
+
+                if ($terms) :
+
+
+                    echo '<ul class="product-cats">';
+
+                    $cat_name = array_combine($cat_name, $cat_name);
+                    foreach ($terms as $term) {
+
+                        if (array_key_exists($term->name, $cat_name)) {
+
+                            echo '<li class="category">
+                  <a href="' . esc_url(get_term_link($term)) . '" class="' . $term->slug . '">';
+                            echo '<span class="onsale">Promocja!</span>';
+                            woocommerce_subcategory_thumbnail($term);
+                            echo ucwords($term->name);
+                            echo '</a>';
+                            echo '</li>';
+                        }
+
+                    }
+                    echo '</ul>';
+                endif;//option
+
+            endif;//term
+
+        }
+
+        public function add_cat_css()
+        {
+            if (is_shop()) {
                 echo '<style>
-
-                              ul.product-cats > li.category:hover > a > img:hover {
+                            ul.product-cats > li.category:hover > a > img:hover {
 								-moz-transform: scale(1.2) rotate(360deg);
 								-webkit-transform: scale(1.2) rotate(360deg);
 								-o-transform: scale(1.2) rotate(360deg);
@@ -172,42 +204,10 @@ if (!class_exists('WC_Tabs')) :
                               padding: 5px;
                               
                              }
-                        </style>';
+                    </style>';
 
-                echo '<ul class="product-cats">';
-                foreach ($terms as $term) {
-
-
-                    echo '<li class="category">
-                  <a href="' . esc_url(get_term_link($term)) . '" class="' . $term->slug . '">';
-                    echo '<span class="onsale">Promocja!</span>';
-                    woocommerce_subcategory_thumbnail($term);//todo zmienic na :get_woocommerce_term_meta oraz wp get attachment url to nie sa tylko subcat!!!
-                    echo $term->name;
-                    echo '</a>';
-                    echo '</li>';
-
-                }
-                echo '</ul>';
             }
         }
-        public function test_two(){
-            $optIntegrate = new WC_Tabs_Integration;
-            $cat_name = $optIntegrate->get_option('cat_name');
-            echo '<h1>cat name'.$cat_name .'</h1>';
-          //   echo '<h1>cat name'.var_dump($cat_name ).'</h1>';
-
-            foreach ($cat_name as $single){
-
-                echo $single;
-            }
-
-
-        }
-
-
-
-
-
     }
 endif;
 
