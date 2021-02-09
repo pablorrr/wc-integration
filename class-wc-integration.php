@@ -34,6 +34,11 @@ if (!class_exists('WC_Tabs_Integration')) :
          */
         private $prod_count;
 
+        /**
+         * @var string
+         */
+        private $cat_name;
+
 
         /**
          * Init and hook in the integration.
@@ -56,6 +61,7 @@ if (!class_exists('WC_Tabs_Integration')) :
             $this->info_tab = $this->get_option('info_tab');
             $this->col_count = $this->get_option('col_count');
             $this->prod_count = $this->get_option('prod_count');
+            $this->cat_name = $this->get_option('cat_name');
 
 
             // Actions.
@@ -63,6 +69,31 @@ if (!class_exists('WC_Tabs_Integration')) :
             // Filters.
             add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'sanitize_settings'));
 
+        }
+
+        /**
+         * Get categories table from DB to print as option value
+         */
+
+        public function get_categories()
+        {
+            global $wpdb;
+            $prod_cat = $wpdb->get_results(
+                'SELECT wp_terms.name 
+                    FROM wp_terms inner join wp_term_taxonomy on wp_terms.term_id=wp_term_taxonomy.term_id
+                    WHERE wp_term_taxonomy.taxonomy = "product_cat"', ARRAY_N);
+
+            //flatting multidimensional array
+            $prod_cat = call_user_func_array('array_merge', $prod_cat);
+
+            //convert keys array as key name same like value
+            if (is_array($prod_cat) && !empty($prod_cat)) {
+                foreach ($prod_cat as $key => $val) {
+                    $new_prod_cat[$val] = $val;
+                }
+                return $new_prod_cat;
+            } else
+                return ['EmptyCat'];
         }
 
 
@@ -111,29 +142,15 @@ if (!class_exists('WC_Tabs_Integration')) :
                     'default' => '2'
                 ),
 
-                /*https://www.skyverge.com/blog/add-custom-options-to-woocommerce-settings/
-                 *  'type'    => 'select',
-    'options' => array(
-      'left'        => __( 'Left', 'woocommerce' ),
-      'right'       => __( 'Right', 'woocommerce' ),
-      'left_space'  => __( 'Left (with space)', 'woocommerce' ),
-      'right_space' => __( 'Right (with space)', 'woocommerce' )
-    ),
-                 */
+                //https://www.skyverge.com/blog/add-custom-options-to-woocommerce-settings/
 
-
-                'test' => array(
-                    'title' => __('select test', 'wc-tabs'),
-                    'type'    => 'select',
-                    'options' => array(
-                        'left'        => __( 'Left', 'woocommerce' ),
-                        'right'       => __( 'Right', 'woocommerce' ),
-                        'left_space'  => __( 'Left (with space)', 'woocommerce' ),
-                        'right_space' => __( 'Right (with space)', 'woocommerce' )
-                    ),
-                    'description' => __('Type number of products per page', 'wc-tabs'),
+                'cat_name' => array(
+                    'title' => __('Select category name', 'wc-tabs'),
+                    'type' => 'multiselect',
+                    'options' => $this->get_categories(),
+                    'description' => __('Press ctrl and click on category which you want', 'wc-tabs'),
                     'desc_tip' => true,
-                    'default' => '2'
+
                 ),
 
 
@@ -150,6 +167,7 @@ if (!class_exists('WC_Tabs_Integration')) :
 
 
             );
+
         }
 
 
@@ -220,7 +238,8 @@ if (!class_exists('WC_Tabs_Integration')) :
                 isset($settings['rev_tab']) &&
                 isset($settings['info_tab']) &&
                 isset($settings['col_count']) &&
-                isset($settings['prod_count'])
+                isset($settings['prod_count']) &&
+                isset($settings['cat_name'])
 
             ) {
                 $settings['desc_tab'] = strtolower($settings['desc_tab']);
@@ -228,14 +247,13 @@ if (!class_exists('WC_Tabs_Integration')) :
                 $settings['info_tab'] = strtolower($settings['info_tab']);
                 $settings['col_count'] = (int)($settings['col_count']);
                 $settings['prod_count'] = $settings['prod_count'] <= $this->_get_publish_prod() ? (int)$settings['prod_count'] : 1;
+                //$settings['cat_name'] = $settings['cat_name'];
 
             }
             return $settings;
         }
     }
 endif;
-
-
 
 
 ?>

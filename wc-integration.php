@@ -41,7 +41,8 @@ if (!class_exists('WC_Tabs')) :
             add_filter('woocommerce_product_tabs', array($this, 'wc_tabs_rename'), 98);
             add_filter('loop_shop_columns', array($this, 'loop_columns'), 20, 1);
             add_filter('loop_shop_per_page', array($this, 'products_count_per_page'), 30, 1);
-            add_action('woocommerce_before_shop_loop', array($this, '_product_subcategories'), 50);
+           // add_action('woocommerce_before_shop_loop', array($this, '_product_subcategories'), 50);
+           add_action('woocommerce_before_shop_loop', array($this, 'test_two'), 50);
         }
 
         /**
@@ -142,13 +143,12 @@ if (!class_exists('WC_Tabs')) :
          */
 
 
-        function _product_subcategories($args = array())
+        function _product_subcategories()
         {
 
-            $parentid = get_queried_object_id();//Retrieve ID of the current queried object.
 
             /*
-              * TODO: UZYCIE BUFORA htmp  ob starty itd
+             * TODO: UZYCIE BUFORA htmp  ob starty itd
              *
              */
             $terms = get_terms('product_cat');
@@ -190,6 +190,23 @@ if (!class_exists('WC_Tabs')) :
                 echo '</ul>';
             }
         }
+        public function test_two(){
+            $optIntegrate = new WC_Tabs_Integration;
+            $cat_name = $optIntegrate->get_option('cat_name');
+            echo '<h1>cat name'.$cat_name .'</h1>';
+          //   echo '<h1>cat name'.var_dump($cat_name ).'</h1>';
+
+            foreach ($cat_name as $single){
+
+                echo $single;
+            }
+
+
+        }
+
+
+
+
 
     }
 endif;
