@@ -154,12 +154,16 @@ if (!class_exists('WC_Tabs')) :
              */
             $optIntegrate = new WC_Tabs_Integration;
             $cat_name = $optIntegrate->get_option('cat_name');
+            $promo_label = $optIntegrate->get_option('promo_label');
+            if (!empty($promo_label)){
+                $promo_label = array_combine($promo_label,$promo_label);
+            }
 
             if (!empty($cat_name)):
 
                 $terms = get_terms('product_cat');
 
-                if ($terms) :
+                if ($terms && is_shop()) :
 
 
                     echo '<ul class="product-cats">';
@@ -171,7 +175,9 @@ if (!class_exists('WC_Tabs')) :
 
                             echo '<li class="category">
                   <a href="' . esc_url(get_term_link($term)) . '" class="' . $term->slug . '">';
-                            echo '<span class="onsale">Promocja!</span>';
+                            if (!empty($promo_label) && array_key_exists($term->name, $promo_label) ) {
+                                echo '<span class="onsale">Promocja!</span>';
+                            }
                             woocommerce_subcategory_thumbnail($term);
                             echo ucwords($term->name);
                             echo '</a>';

@@ -94,12 +94,15 @@ if (!class_exists('WC_Tabs_Integration')) :
             //convert keys array as key name same like value
             if (is_array($prod_cat) && !empty($prod_cat)) {
 
-                return array_combine($prod_cat,$prod_cat);
+                return array_combine($prod_cat, $prod_cat);
             } else
                 return ['EmptyCat'];
         }
 
-
+        public function get_promo_cat()
+        {
+            return $this->get_categories();
+        }
 
 
         /**
@@ -149,6 +152,7 @@ if (!class_exists('WC_Tabs_Integration')) :
 
                 //https://www.skyverge.com/blog/add-custom-options-to-woocommerce-settings/
 
+
                 'cat_name' => array(
                     'title' => __('Select category name', 'wc-tabs'),
                     'type' => 'multiselect',
@@ -157,7 +161,14 @@ if (!class_exists('WC_Tabs_Integration')) :
                     'desc_tip' => true,
 
                 ),
+                'promo_label' => array(
+                    'title' => __('Select category to promotion', 'wc-tabs'),
+                    'type' => 'multiselect',
+                    'options' => $this->get_promo_cat(),
+                    'description' => __('Press ctrl and click on category which you want to promote on Shop Page', 'wc-tabs'),
+                    'desc_tip' => true,
 
+                ),
 
                 'customize_button' => array(
                     'title' => __('Go to shop page', 'wc-tabs'),
@@ -244,7 +255,8 @@ if (!class_exists('WC_Tabs_Integration')) :
                 isset($settings['info_tab']) &&
                 isset($settings['col_count']) &&
                 isset($settings['prod_count']) &&
-                isset($settings['cat_name'])
+                isset($settings['cat_name']) &&
+                isset($settings['promo_label'])
 
             ) {
                 $settings['desc_tab'] = strtolower($settings['desc_tab']);
@@ -252,7 +264,7 @@ if (!class_exists('WC_Tabs_Integration')) :
                 $settings['info_tab'] = strtolower($settings['info_tab']);
                 $settings['col_count'] = (int)($settings['col_count']);
                 $settings['prod_count'] = $settings['prod_count'] <= $this->_get_publish_prod() ? (int)$settings['prod_count'] : 1;
-                //$settings['cat_name'] = $settings['cat_name'];
+
 
             }
             return $settings;
