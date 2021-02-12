@@ -176,7 +176,7 @@ if (!class_exists('WC_Tabs')) :
                             echo '<li class="category">
                             <a href="' . esc_url(get_term_link($term)) . '" class="' . $term->slug . '">';
                             if (!empty($promo_label) && array_key_exists($term->name, $promo_label) ) {
-                                echo '<span class="onsale">'.__('Promotion!!!','wc-tabs').'</span>';
+                                echo '<span class="onsale">'.__('Promotion!!','wc-tabs').'</span>';
                             }
                             woocommerce_subcategory_thumbnail($term);
                             echo ucwords($term->name);
