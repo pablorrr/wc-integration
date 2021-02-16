@@ -7,6 +7,7 @@
  * @author   Pablozzz
  */
 
+
 //TODO: ADD VALIDATE AND ERROS MESSAGE!!!!
 
 if (!class_exists('WC_Tabs_Integration')) :
