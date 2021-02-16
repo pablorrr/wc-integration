@@ -1,5 +1,10 @@
 <?php
 
+namespace Main;
+
+
+use WC_Tabs_Integration;
+use WP_Error;
 
 define('WC_TAB_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('MY_PLUGIN_SLUG', 'wc-settings');
@@ -8,12 +13,15 @@ if (!class_exists('WC_Tabs')) :
 
     class WC_Tabs
     {
-        // private static  $instance = null;
+        //Singleton on WP Plugin implementation inspired
+        // with https://gist.github.com/goncaloneves/e0f07a8db17b06c2f968
 
         private static $_instance;
 
-        public static function instance() {
-            if ( is_null( self::$_instance ) ) {
+
+        public static function instance(): WC_Tabs
+        {
+            if (is_null(self::$_instance)) {
                 self::$_instance = new self;
             }
             return self::$_instance;
@@ -22,17 +30,21 @@ if (!class_exists('WC_Tabs')) :
         /**
          * Constructor.
          */
-        private function __construct() {
+        private function __construct()
+        {
             $this->actions();
+
         }
 
 
         /**
-         * Initialize the plugin when all plugins loaded.
+         * Initialize the plugin when all plugins are loaded.
          */
 
-        private function actions(){
-            add_action( 'plugins_loaded',  array( $this, 'init' ) );
+        private function actions()
+        {
+            add_action('plugins_loaded', array($this, 'init'));
+
         }
 
         /**
@@ -64,8 +76,8 @@ if (!class_exists('WC_Tabs')) :
             add_filter('plugin_action_links_' . plugin_basename(__FILE__), array($this, 'wc_tab_action_links'));
 
             add_filter('woocommerce_product_tabs', array($this, 'wc_tabs_rename'), 98);
-            add_filter('loop_shop_columns', array($this, 'loop_columns'), 20,1);
-            add_filter('loop_shop_per_page', array($this, 'products_count_per_page'), 30,1);
+            add_filter('loop_shop_columns', array($this, 'loop_columns'), 20, 1);
+            add_filter('loop_shop_per_page', array($this, 'products_count_per_page'), 30, 1);
             add_action('wp_head', array($this, 'add_cat_css'), 49);
             add_action('woocommerce_before_shop_loop', array($this, '_product_subcategories'), 50);
 
@@ -123,11 +135,12 @@ if (!class_exists('WC_Tabs')) :
             $optIntegrate = new WC_Tabs_Integration;
             $prod_per_row = $optIntegrate->get_option('col_count');
 
+
             return $prod_per_row;
         }
 
 
-      public  function products_count_per_page($prod_per_page)
+        public function products_count_per_page($prod_per_page)
         {
             $optIntegrate = new WC_Tabs_Integration;
             $prod_per_page = $optIntegrate->get_option('prod_count');

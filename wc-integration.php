@@ -25,8 +25,8 @@
 
 if (!defined('ABSPATH')) exit;
 require 'wc-tabs.php';
-function Run_WC_Tabs(): WC_Tabs
+function Run_WC_Tabs(): Main\WC_Tabs
 {
-    return WC_Tabs::instance();
+    return Main\WC_Tabs::instance();
 }
 Run_WC_Tabs();
