@@ -1,7 +1,5 @@
 {
     "autoload": {
-        "files": [
-            "Main/wc-tabs.php"
-        ]
+        "classmap": [ "libraries/"]
     }
 }
