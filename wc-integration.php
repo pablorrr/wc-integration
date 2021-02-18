@@ -23,9 +23,15 @@
 
 
 if (!defined('ABSPATH')) exit;
-require 'wc-tabs.php';
+
+
+require __DIR__ . '/vendor/autoload.php';
+
 function Run_WC_Tabs(): Main\WC_Tabs
 {
     return Main\WC_Tabs::instance();
 }
+
 Run_WC_Tabs();
+
+
