@@ -9,9 +9,15 @@ use WP_Error;
 define('WC_TAB_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('MY_PLUGIN_SLUG', 'wc-settings');
 
-if (!class_exists('WC_Tabs')) :
+if (!class_exists('WC_Tabs')&& !class_exists('ABS_WC_Tabs') ) :
+    abstract class ABS_WC_Tabs
+    {
+        abstract public function init();
+        abstract public function wc_tab_admin_notice();
+    }
 
-    class WC_Tabs
+
+   final class WC_Tabs extends  ABS_WC_Tabs
     {
         //Singleton on WP Plugin implementation inspired
         // with https://gist.github.com/goncaloneves/e0f07a8db17b06c2f968
@@ -33,7 +39,6 @@ if (!class_exists('WC_Tabs')) :
         private function __construct()
         {
             $this->actions();
-
         }
 
 
