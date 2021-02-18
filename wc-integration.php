@@ -33,5 +33,3 @@ function Run_WC_Tabs(): Main\WC_Tabs
 }
 
 Run_WC_Tabs();
-
-
