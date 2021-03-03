@@ -10,11 +10,11 @@
 //TODO: ADD VALIDATE AND ERROS MESSAGE!!!!
 
 
-
+use Main\_options;
 
 if (!class_exists('WC_Tabs_Integration')) :
 
-    class WC_Tabs_Integration extends WC_Integration
+    class WC_Tabs_Integration extends WC_Integration implements _options //Proxy pattern refers
     {
         /**
          * @var string
@@ -76,6 +76,77 @@ if (!class_exists('WC_Tabs_Integration')) :
             add_action('woocommerce_update_options_integration_' . $this->id, array($this, 'process_admin_options'));
             // Filters.
             add_filter('woocommerce_settings_api_sanitized_fields_' . $this->id, array($this, 'sanitize_settings'));
+
+        }
+
+        public function loop_columns()
+        {
+            return $this->get_option('col_count');
+        }
+
+        public function products_count_per_page()
+        {
+            return $this->get_option('prod_count');
+        }
+
+
+
+        public function _product_subcategories()
+        {
+            /*
+             * TODO: UZYCIE BUFORA htmp  ob starty itd
+             *
+             */
+
+
+            $cat_name = $this->get_option('cat_name');
+            $promo_label = $this->get_option('promo_label');
+            if (!empty($promo_label)) {
+                $promo_label = array_combine($promo_label, $promo_label);
+            }
+
+            if (!empty($cat_name)):
+
+                $terms = get_terms('product_cat');
+
+                if ($terms && is_shop()) :
+
+
+                    echo '<ul class="product-cats">';
+
+                    $cat_name = array_combine($cat_name, $cat_name);
+                    foreach ($terms as $term) {
+
+                        if (array_key_exists($term->name, $cat_name)) {
+
+                            echo '<li class="category">
+                            <a href="' . esc_url(get_term_link($term)) . '" class="' . $term->slug . '">';
+                            if (!empty($promo_label) && array_key_exists($term->name, $promo_label)) {
+                                echo '<span class="onsale">' . __('Promotion!!', 'wc-tabs') . '</span>';
+                            }
+                            woocommerce_subcategory_thumbnail($term);
+                            echo ucwords($term->name);
+                            echo '</a>';
+                            echo '</li>';
+                        }
+
+                    }
+                    echo '</ul>';
+                endif;//option
+
+            endif;//term
+
+        }
+
+
+
+        public function wc_tabs_rename()
+        {
+            $tabs['description']['title'] = esc_html(__($this->get_option('desc_tab')));        // Rename the description tab
+            $tabs['reviews']['title'] = esc_html(__($this->get_option('rev_tab')));            // Rename the reviews tab
+            $tabs['additional_information']['title'] = esc_html(__($this->get_option('info_tab'))); // Rename the additional information tab
+
+            return $tabs;
 
         }
 

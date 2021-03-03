@@ -10,22 +10,35 @@ define('WC_TAB_PLUGIN_PATH', plugin_dir_path(__FILE__));
 define('MY_PLUGIN_SLUG', 'wc-settings');
 
 if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
-    abstract class ABS_WC_Tabs
+    interface  important_functions
     {
-        abstract public function init();
+        function init();
 
-        abstract public function wc_tab_admin_notice();
+        function wc_tab_admin_notice();
+    }
 
-        abstract public function get_WC_Tabs_Integration();
+    // refers to Proxy Pattern
+    interface _options
+    {
+        function loop_columns();
+
+        function products_count_per_page();
+
+        function _product_subcategories();
+
+        function wc_tabs_rename();
     }
 
 
-    final class WC_Tabs extends ABS_WC_Tabs
+    // final class WC_Tabs  implements test;
+    final class WC_Tabs implements _options,important_functions
     {
         //Singleton on WP Plugin implementation inspired
         // with https://gist.github.com/goncaloneves/e0f07a8db17b06c2f968
 
         private static $_instance;
+        private $tabsIntegrate;
+
 
 
         public static function instance(): WC_Tabs
@@ -43,7 +56,6 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
         public function __construct()
         {
             $this->actions();
-
         }
 
 
@@ -94,11 +106,6 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
 
         }
 
-        public function get_WC_Tabs_Integration(): WC_Tabs_Integration
-        {
-            return $optIntegrate = new WC_Tabs_Integration;
-        }
-
 
         function wc_tab_action_links($links)
         {
@@ -130,39 +137,39 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
             return $integrations;
         }
 
+
+        public function _getObj()
+        {
+            if ($this->tabsIntegrate == null) {
+                $this->tabsIntegrate = new WC_Tabs_Integration();
+            }
+        }
+
         /**
          * Rename product data tabs
          * source :https://docs.woocommerce.com/document/editing-product-data-tabs/
          */
 
-        public function wc_tabs_rename($tabs)
+        public function wc_tabs_rename()
         {
-            $tabs['description']['title'] = esc_html(__($this->get_WC_Tabs_Integration()->get_option('desc_tab')));        // Rename the description tab
-            $tabs['reviews']['title'] = esc_html(__($this->get_WC_Tabs_Integration()->get_option('rev_tab')));            // Rename the reviews tab
-            $tabs['additional_information']['title'] = esc_html(__($this->get_WC_Tabs_Integration()->get_option('info_tab'))); // Rename the additional information tab
-
-            return $tabs;
-
-        }
-
-        public function loop_columns($prod_per_row)
-        {
-
-
-            $prod_per_row = $this->get_WC_Tabs_Integration()->get_option('col_count');
-
-
-            return $prod_per_row;
+            //proxy
+            $this->_getObj();
+            return $this->tabsIntegrate->wc_tabs_rename();
         }
 
 
-        public function products_count_per_page($prod_per_page)
+        public function loop_columns()
+        {  //proxy
+            $this->_getObj();
+            return $this->tabsIntegrate->loop_columns();
+        }
+
+
+        public function products_count_per_page()
         {
-
-
-            $prod_per_page = $this->get_WC_Tabs_Integration()->get_option('prod_count');
-
-            return $prod_per_page;
+            //proxy
+            $this->_getObj();
+            return $this->tabsIntegrate->products_count_per_page();
         }
 
 
@@ -174,49 +181,9 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
 
         public function _product_subcategories()
         {
-            /*
-             * TODO: UZYCIE BUFORA htmp  ob starty itd
-             *
-             */
-
-
-            $cat_name = $this->get_WC_Tabs_Integration()->get_option('cat_name');
-            $promo_label = $this->get_WC_Tabs_Integration()->get_option('promo_label');
-            if (!empty($promo_label)) {
-                $promo_label = array_combine($promo_label, $promo_label);
-            }
-
-            if (!empty($cat_name)):
-
-                $terms = get_terms('product_cat');
-
-                if ($terms && is_shop()) :
-
-
-                    echo '<ul class="product-cats">';
-
-                    $cat_name = array_combine($cat_name, $cat_name);
-                    foreach ($terms as $term) {
-
-                        if (array_key_exists($term->name, $cat_name)) {
-
-                            echo '<li class="category">
-                            <a href="' . esc_url(get_term_link($term)) . '" class="' . $term->slug . '">';
-                            if (!empty($promo_label) && array_key_exists($term->name, $promo_label)) {
-                                echo '<span class="onsale">' . __('Promotion!!', 'wc-tabs') . '</span>';
-                            }
-                            woocommerce_subcategory_thumbnail($term);
-                            echo ucwords($term->name);
-                            echo '</a>';
-                            echo '</li>';
-                        }
-
-                    }
-                    echo '</ul>';
-                endif;//option
-
-            endif;//term
-
+            //proxy
+            $this->_getObj();
+            return $this->tabsIntegrate->_product_subcategories();
         }
 
         public function add_cat_css()
