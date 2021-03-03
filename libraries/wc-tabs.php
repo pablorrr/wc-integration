@@ -15,6 +15,8 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
         abstract public function init();
 
         abstract public function wc_tab_admin_notice();
+
+        abstract public function get_WC_Tabs_Integration();
     }
 
 
@@ -24,6 +26,7 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
         // with https://gist.github.com/goncaloneves/e0f07a8db17b06c2f968
 
         private static $_instance;
+
 
         public static function instance(): WC_Tabs
         {
@@ -35,15 +38,18 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
 
         /**
          * Constructor.
+         * @param $Tabs_Integration
          */
         public function __construct()
         {
             $this->actions();
+
         }
 
 
         /**
          * Initialize the plugin when all plugins are loaded.
+         * @param $WC_Tabs_Integration
          */
 
         private function actions()
@@ -88,6 +94,11 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
 
         }
 
+        public function get_WC_Tabs_Integration(): WC_Tabs_Integration
+        {
+            return $optIntegrate = new WC_Tabs_Integration;
+        }
+
 
         function wc_tab_action_links($links)
         {
@@ -111,6 +122,7 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
 
         /**
          * Add a new integration to WooCommerce.
+         * @param $integrations
          */
         public function wc_tab_integration($integrations)
         {
@@ -125,11 +137,9 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
 
         public function wc_tabs_rename($tabs)
         {
-            $optIntegrate = new WC_Tabs_Integration;
-
-            $tabs['description']['title'] = esc_html(__($optIntegrate->get_option('desc_tab')));        // Rename the description tab
-            $tabs['reviews']['title'] = esc_html(__($optIntegrate->get_option('rev_tab')));            // Rename the reviews tab
-            $tabs['additional_information']['title'] = esc_html(__($optIntegrate->get_option('info_tab'))); // Rename the additional information tab
+            $tabs['description']['title'] = esc_html(__($this->get_WC_Tabs_Integration()->get_option('desc_tab')));        // Rename the description tab
+            $tabs['reviews']['title'] = esc_html(__($this->get_WC_Tabs_Integration()->get_option('rev_tab')));            // Rename the reviews tab
+            $tabs['additional_information']['title'] = esc_html(__($this->get_WC_Tabs_Integration()->get_option('info_tab'))); // Rename the additional information tab
 
             return $tabs;
 
@@ -137,8 +147,9 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
 
         public function loop_columns($prod_per_row)
         {
-            $optIntegrate = new WC_Tabs_Integration;
-            $prod_per_row = $optIntegrate->get_option('col_count');
+
+
+            $prod_per_row = $this->get_WC_Tabs_Integration()->get_option('col_count');
 
 
             return $prod_per_row;
@@ -147,15 +158,16 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
 
         public function products_count_per_page($prod_per_page)
         {
-            $optIntegrate = new WC_Tabs_Integration;
-            $prod_per_page = $optIntegrate->get_option('prod_count');
+
+
+            $prod_per_page = $this->get_WC_Tabs_Integration()->get_option('prod_count');
 
             return $prod_per_page;
         }
 
 
         /**
-         * Display category image on shoppage
+         * Display category image on shop page
          * https://code.tutsplus.com/tutorials/display-woocommerce-categories-subcategories-and-products-in-separate-lists--cms-25479
          */
 
@@ -166,9 +178,10 @@ if (!class_exists('WC_Tabs') && !class_exists('ABS_WC_Tabs')) :
              * TODO: UZYCIE BUFORA htmp  ob starty itd
              *
              */
-            $optIntegrate = new WC_Tabs_Integration;
-            $cat_name = $optIntegrate->get_option('cat_name');
-            $promo_label = $optIntegrate->get_option('promo_label');
+
+
+            $cat_name = $this->get_WC_Tabs_Integration()->get_option('cat_name');
+            $promo_label = $this->get_WC_Tabs_Integration()->get_option('promo_label');
             if (!empty($promo_label)) {
                 $promo_label = array_combine($promo_label, $promo_label);
             }
